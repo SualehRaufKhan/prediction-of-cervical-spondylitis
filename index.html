@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Cervical Spondylitis Predictor</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        form { max-width: 400px; margin: auto; }
+        label { display: block; margin-top: 10px; }
+        input, select { width: 100%; padding: 8px; }
+        button { margin-top: 20px; padding: 10px 20px; }
+        #result { margin-top: 20px; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <h2>Cervical Spondylitis Risk Predictor</h2>
+    <form id="predictForm">
+        <label>Age: <input type="number" name="age" required></label>
+        <label>Gender:
+            <select name="gender">
+                <option>Male</option>
+                <option>Female</option>
+            </select>
+        </label>
+        <label>Neck Pain: <select name="neck_pain"><option value="1">Yes</option><option value="0">No</option></select></label>
+        <label>Stiffness: <select name="stiffness"><option value="1">Yes</option><option value="0">No</option></select></label>
+        <label>Headache: <select name="headache"><option value="1">Yes</option><option value="0">No</option></select></label>
+        <label>Dizziness: <select name="dizziness"><option value="1">Yes</option><option value="0">No</option></select></label>
+        <label>Numbness in arms/hands: <select name="numbness"><option value="1">Yes</option><option value="0">No</option></select></label>
+        <label>Occupation:
+            <select name="occupation">
+                <option>Sedentary</option>
+                <option>Manual</option>
+            </select>
+        </label>
+        <label>Duration of symptoms (months): <input type="number" name="duration_months" required></label>
+        <label>Physical Activity Level:
+            <select name="activity_level">
+                <option>Low</option>
+                <option>Medium</option>
+                <option>High</option>
+            </select>
+        </label>
+        <button type="submit">Predict</button>
+    </form>
+    <div id="result"></div>
+    <script>
+        document.getElementById('predictForm').onsubmit = async function(e) {
+            e.preventDefault();
+            const form = e.target;
+            const data = {};
+            for (let el of form.elements) {
+                if (el.name) data[el.name] = el.value;
+            }
+            console.log("received data : ", data);
+            const res = await fetch('http://localhost:5000/predict', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(data)
+            });
+            const result = await res.json();
+            console.log(result);
+            document.getElementById('result').innerText =
+                result.risk ? "High risk of Cervical Spondylitis. Please consult a doctor." : "Low risk of Cervical Spondylitis.";
+
+            const resultDiv = document.getElementById('result');
+            if (result.risk) {
+                resultDiv.className = "high-risk";
+                resultDiv.innerText = "High risk of Cervical Spondylitis. Please consult a doctor.";
+            } else {
+                resultDiv.className = "low-risk";
+                resultDiv.innerText = "Low risk of Cervical Spondylitis.";
+            }
+        };
+    </script>
+</body>
+</html> 
+
+<style>
+    #result {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+        margin: 20px;
+        font-size: 1.5rem;
+        font-weight: bold;
+        border-radius: 10px;
+        background-color: #f0f4f8;
+        color: #333;
+        text-align: center;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        min-height: 100px;
+        transition: all 0.3s ease;
+    }
+
+    /* Color changes for high/low risk */
+    #result.high-risk {
+        background-color: #ffe5e5;
+        color: #c00;
+        border: 2px solid #c00;
+    }
+
+    #result.low-risk {
+        background-color: #e5ffe5;
+        color: #080;
+        border: 2px solid #080;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 600px) {
+        #result {
+            font-size: 1.2rem;
+            padding: 15px;
+            margin: 15px;
+        }
+    }
+</style>
