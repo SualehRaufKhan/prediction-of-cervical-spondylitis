@@ -8,10 +8,10 @@ cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
 
 
-model = joblib.load("../model.pkl")
-le_gender = joblib.load("../le_gender.pkl")
-le_occupation = joblib.load("../le_occupation.pkl")
-le_activity = joblib.load("../le_activity.pkl")
+model = joblib.load("model.pkl")
+le_gender = joblib.load("le_gender.pkl")
+le_occupation = joblib.load("le_occupation.pkl")
+le_activity = joblib.load("le_activity.pkl")
 
 @app.route("/predict", methods=["POST"])
 def predict():
